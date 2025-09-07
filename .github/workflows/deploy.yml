@@ -28,7 +28,7 @@ jobs:
         NODE_OPTIONS: --max-old-space-size=4096
         
     - name: Deploy to Vercel (Production)
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && secrets.VERCEL_TOKEN != ''
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -37,7 +37,7 @@ jobs:
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         
     - name: Deploy to Vercel (Preview)
-      if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
+      if: (github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master') && secrets.VERCEL_TOKEN != ''
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -45,8 +45,21 @@ jobs:
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         
+    - name: Skip Vercel Deployment
+      if: secrets.VERCEL_TOKEN == ''
+      run: |
+        echo "✅ Build completed successfully!"
+        echo "⚠️ Vercel deployment skipped - VERCEL_TOKEN not configured"
+        echo ""
+        echo "To enable Vercel deployment, add the following secrets to your repository:"
+        echo "- VERCEL_TOKEN"
+        echo "- VERCEL_ORG_ID" 
+        echo "- VERCEL_PROJECT_ID"
+        echo ""
+        echo "The application build artifacts are available in the 'dist' directory."
+        
     - name: Comment PR with deployment URL
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && secrets.VERCEL_TOKEN != ''
       uses: actions/github-script@v7
       with:
         script: |
