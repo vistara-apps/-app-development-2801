@@ -1,0 +1,86 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main, master, codegen-bot/complete-prd-implementation-1757274496 ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run linting
+      run: npm run lint
+      
+    - name: Run type checking
+      run: npm run type-check
+
+    - name: Build application
+      run: npm run build
+      env:
+        NODE_OPTIONS: --max-old-space-size=4096
+        
+    - name: Deploy to Vercel (Production)
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-args: '--prod'
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      continue-on-error: true
+        
+    - name: Deploy to Vercel (Preview)
+      if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-args: '--no-wait'
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      continue-on-error: true
+        
+    - name: Build Success Message
+      run: |
+        echo "✅ Build completed successfully!"
+        echo "📦 Application build artifacts are available in the 'dist' directory."
+        echo ""
+        echo "ℹ️ Note: Vercel deployment may be skipped if secrets are not configured."
+        echo "To enable Vercel deployment, add the following secrets to your repository:"
+        echo "- VERCEL_TOKEN"
+        echo "- VERCEL_ORG_ID" 
+        echo "- VERCEL_PROJECT_ID"
+        
+    - name: Comment PR with build status
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `✅ **Build Successful!**
+
+          The application has been built successfully and is ready for deployment.
+
+          📦 Build artifacts are available in the \`dist\` directory.
+
+          💡 **Note:** To enable automatic Vercel deployments, configure the following secrets in your repository settings:
+          - \`VERCEL_TOKEN\`
+          - \`VERCEL_ORG_ID\`
+          - \`VERCEL_PROJECT_ID\``
+          });
