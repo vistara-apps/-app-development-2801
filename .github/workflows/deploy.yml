@@ -1,5 +1,4 @@
 name: Deploy to Vercel
-# Fixed workflow syntax issues
 
 on:
   push:
@@ -75,10 +74,13 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: `✅ **Build Successful!**
-            \n\nThe application has been built successfully and is ready for deployment.
-            \n\n📦 Build artifacts are available in the \`dist\` directory.
-            \n\n💡 **Note:** To enable automatic Vercel deployments, configure the following secrets in your repository settings:
-            \n- \`VERCEL_TOKEN\`
-            \n- \`VERCEL_ORG_ID\`
-            \n- \`VERCEL_PROJECT_ID\``
+
+          The application has been built successfully and is ready for deployment.
+
+          📦 Build artifacts are available in the \`dist\` directory.
+
+          💡 **Note:** To enable automatic Vercel deployments, configure the following secrets in your repository settings:
+          - \`VERCEL_TOKEN\`
+          - \`VERCEL_ORG_ID\`
+          - \`VERCEL_PROJECT_ID\``
           });
