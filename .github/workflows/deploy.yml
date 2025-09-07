@@ -64,30 +64,8 @@ jobs:
         echo "- VERCEL_ORG_ID" 
         echo "- VERCEL_PROJECT_ID"
         
-    - name: Comment PR with deployment URL
+    - name: Comment PR with build status
       if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { data: deployments } = await github.rest.repos.listDeployments({
-            owner: context.repo.owner,
-            repo: context.repo.repo
-          });
-          const latestDeployment = deployments[0];
-          if (latestDeployment) {
-            const deploymentUrl = `https://${latestDeployment.environment}.vercel.app`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🚀 **Preview Deployment Ready!**
-              \n\n📱 **URL:** ${deploymentUrl}
-              \n\nThis preview will be automatically updated when you push new commits to this PR.`
-            });
-          }
-          
-    - name: Comment PR with build success
-      if: github.event_name == 'pull_request' && secrets.VERCEL_TOKEN == ''
       uses: actions/github-script@v7
       with:
         script: |
@@ -96,8 +74,9 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: `✅ **Build Successful!**
-            \n\nThe application has been built successfully. To enable automatic deployments, configure Vercel secrets in your repository settings.
-            \n\n**Required secrets:**
+            \n\nThe application has been built successfully and is ready for deployment.
+            \n\n📦 Build artifacts are available in the \`dist\` directory.
+            \n\n💡 **Note:** To enable automatic Vercel deployments, configure the following secrets in your repository settings:
             \n- \`VERCEL_TOKEN\`
             \n- \`VERCEL_ORG_ID\`
             \n- \`VERCEL_PROJECT_ID\``
