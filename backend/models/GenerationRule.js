@@ -297,7 +297,7 @@ generationRuleSchema.methods.execute = async function(context = {}) {
 
 // Helper methods for rule execution
 generationRuleSchema.methods.executeFaker = async function() {
-  const { faker } = await import('faker');
+  const { faker } = await import('@faker-js/faker');
   const method = this.ruleDefinition.fakerMethod;
   const locale = this.ruleDefinition.fakerLocale || 'en';
   

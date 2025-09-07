@@ -1,4 +1,4 @@
-import { faker } from 'faker';
+import { faker } from '@faker-js/faker';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';

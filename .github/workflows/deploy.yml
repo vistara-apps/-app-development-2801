@@ -22,6 +22,12 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Run linting
+      run: npm run lint
+      
+    - name: Run type checking
+      run: npm run type-check
+
     - name: Build application
       run: npm run build
       env:
@@ -79,3 +85,20 @@ jobs:
               \n\nThis preview will be automatically updated when you push new commits to this PR.`
             });
           }
+          
+    - name: Comment PR with build success
+      if: github.event_name == 'pull_request' && secrets.VERCEL_TOKEN == ''
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `✅ **Build Successful!**
+            \n\nThe application has been built successfully. To enable automatic deployments, configure Vercel secrets in your repository settings.
+            \n\n**Required secrets:**
+            \n- \`VERCEL_TOKEN\`
+            \n- \`VERCEL_ORG_ID\`
+            \n- \`VERCEL_PROJECT_ID\``
+          });
