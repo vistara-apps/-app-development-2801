@@ -2,36 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    border-color: theme('colors.dark.border');
-  }
-  
-  body {
-    background-color: theme('colors.dark.bg');
-    color: theme('colors.dark.text');
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
 }
 
-@layer components {
-  .btn-primary {
-    @apply bg-accent hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium transition-colors duration-150;
-  }
-  
-  .btn-secondary {
-    @apply bg-dark-surface hover:bg-dark-border text-dark-text px-4 py-2 rounded-md font-medium transition-colors duration-150;
-  }
-  
-  .card {
-    @apply bg-dark-surface border border-dark-border rounded-lg p-6 shadow-dark-card;
-  }
-  
-  .form-input {
-    @apply bg-dark-surface border border-dark-border rounded-md px-3 py-2 text-dark-text placeholder-dark-muted focus:outline-none focus:ring-2 focus:ring-accent;
-  }
-  
-  .form-label {
-    @apply block text-sm font-medium text-dark-text mb-2;
-  }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
